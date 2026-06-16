@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>偏鄉×弱勢青年資源鴻溝 — 教育問題分析卡</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans TC','Noto Sans KR',sans-serif;background:#f5f4f0;color:#1a1a18;min-height:100vh}
+
+.header{background:#fff;border-bottom:0.5px solid #d3d1c7;padding:20px 24px;text-align:center}
+.header-badge{display:inline-block;font-size:11px;font-weight:600;background:#EEEDFE;color:#3C3489;border:0.5px solid #AFA9EC;border-radius:20px;padding:3px 14px;margin-bottom:10px}
+.header-title{font-size:21px;font-weight:700;color:#1a1a18;margin-bottom:4px}
+.header-sub{font-size:12px;color:#5f5e5a;margin-bottom:2px}
+.header-ko{font-size:11px;color:#888780}
+
+/* STAGE NAV */
+.stage-nav{display:flex;gap:0;max-width:760px;margin:18px auto 0;padding:0 20px;overflow-x:auto}
+.stage-pip{flex:1;min-width:80px;text-align:center;padding:8px 4px;border-bottom:2px solid #d3d1c7;cursor:pointer;transition:all .2s;position:relative}
+.stage-pip.active{border-bottom:2px solid #534AB7}
+.stage-pip.done{border-bottom:2px solid #1D9E75}
+.stage-num{font-size:11px;font-weight:700;color:#888780;margin-bottom:2px}
+.stage-pip.active .stage-num{color:#534AB7}
+.stage-pip.done .stage-num{color:#1D9E75}
+.stage-name{font-size:9px;color:#888780;line-height:1.3}
+.stage-pip.active .stage-name{color:#534AB7;font-weight:600}
+.stage-pip.done .stage-name{color:#1D9E75}
+
+/* PROGRESS */
+.progress-wrap{max-width:760px;margin:16px auto 0;padding:0 20px}
+.progress-info{display:flex;justify-content:space-between;margin-bottom:6px}
+.progress-label{font-size:11px;color:#5f5e5a}
+.progress-frac{font-size:12px;font-weight:600;color:#3C3489}
+.progress-bar-bg{height:5px;background:#e8e6de;border-radius:3px;overflow:hidden}
+.progress-bar-fill{height:100%;background:linear-gradient(90deg,#534AB7,#1D9E75);border-radius:3px;transition:width .4s}
+
+/* CARD */
+.card-wrap{max-width:760px;margin:16px auto;padding:0 20px 32px}
+.quiz-card{background:#fff;border:0.5px solid #d3d1c7;border-radius:16px;overflow:hidden}
+.card-stage-bar{height:4px;background:linear-gradient(90deg,#534AB7,#1D9E75)}
+.card-inner{padding:26px 28px 24px}
+.q-stage-label{display:inline-flex;align-items:center;gap:7px;margin-bottom:14px}
+.q-stage-badge{font-size:11px;font-weight:700;padding:3px 11px;border-radius:12px;background:#EEEDFE;color:#3C3489;border:0.5px solid #AFA9EC}
+.q-stage-name{font-size:12px;color:#5f5e5a;font-weight:500}
+.q-num{font-size:11px;font-weight:600;color:#AFA9EC;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px}
+.q-main{font-size:17px;font-weight:700;color:#1a1a18;line-height:1.45;margin-bottom:5px}
+.q-zh{font-size:13px;color:#5f5e5a;margin-bottom:3px;line-height:1.4}
+.q-ko{font-size:11px;color:#888780;margin-bottom:18px;line-height:1.4}
+.q-context{background:#f5f4f0;border-left:3px solid #AFA9EC;border-radius:0 8px 8px 0;padding:10px 14px;margin-bottom:20px;font-size:12px;color:#5f5e5a;line-height:1.6}
+.q-context strong{color:#534AB7;font-weight:600}
+
+/* OPTIONS */
+.opts-label{font-size:11px;font-weight:600;color:#888780;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px}
+.options{display:flex;flex-direction:column;gap:9px;margin-bottom:18px}
+.opt{border:0.5px solid #d3d1c7;border-radius:10px;padding:12px 15px;cursor:pointer;transition:all .18s;background:#fff;text-align:left;width:100%;display:flex;align-items:flex-start;gap:10px}
+.opt:hover{border-color:#AFA9EC;background:#f8f7fe}
+.opt.selected{border:2px solid #534AB7;background:#EEEDFE}
+.opt-circle{width:18px;height:18px;border-radius:50%;border:1.5px solid #d3d1c7;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:all .18s}
+.opt.selected .opt-circle{background:#534AB7;border-color:#534AB7}
+.opt-check{width:8px;height:8px;background:#fff;border-radius:50%;display:none}
+.opt.selected .opt-check{display:block}
+.opt-text{flex:1}
+.opt-en{font-size:13px;font-weight:600;color:#1a1a18;margin-bottom:2px;line-height:1.35}
+.opt-zh{font-size:11px;color:#5f5e5a;margin-bottom:1px}
+.opt-ko{font-size:10px;color:#888780}
+
+/* TEXTAREA */
+.textarea-label{font-size:11px;font-weight:600;color:#888780;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px}
+.q-textarea{width:100%;border:0.5px solid #d3d1c7;border-radius:10px;padding:12px 14px;font-size:13px;color:#1a1a18;resize:vertical;min-height:90px;font-family:inherit;background:#fff;transition:border-color .15s;line-height:1.6}
+.q-textarea:focus{outline:none;border-color:#534AB7}
+.q-textarea::placeholder{color:#b4b2a9}
+.char-count{font-size:10px;color:#888780;text-align:right;margin-top:4px;margin-bottom:16px}
+
+/* REFLECTION */
+.reflection{margin-top:16px;background:#f8f7fe;border:0.5px solid #AFA9EC;border-radius:10px;padding:14px 16px;display:none}
+.reflection.show{display:block}
+.reflection-title{font-size:12px;font-weight:700;color:#534AB7;margin-bottom:6px}
+.reflection-body{font-size:12px;color:#444441;line-height:1.65}
+
+/* NAV */
+.nav-row{display:flex;justify-content:space-between;align-items:center;margin-top:22px}
+.btn-prev{padding:10px 20px;font-size:13px;font-weight:600;border-radius:10px;cursor:pointer;background:#f1efe8;color:#5f5e5a;border:0.5px solid #d3d1c7;transition:all .15s}
+.btn-prev:hover{background:#e8e6de}
+.btn-next{padding:10px 22px;font-size:13px;font-weight:600;border-radius:10px;cursor:pointer;background:#534AB7;color:#fff;border:none;transition:all .15s}
+.btn-next:hover{background:#3C3489}
+.btn-next:disabled{background:#d3d1c7;cursor:not-allowed}
+.btn-skip{padding:10px 14px;font-size:12px;color:#888780;background:none;border:none;cursor:pointer}
+.btn-skip:hover{color:#534AB7}
+
+/* RESULT */
+.result-wrap{max-width:760px;margin:0 auto;padding:0 20px 48px;display:none}
+.result-hero{background:linear-gradient(135deg,#3C3489 0%,#1D9E75 100%);border-radius:16px;padding:32px 28px;text-align:center;margin-bottom:16px;color:#fff}
+.result-hero-title{font-size:22px;font-weight:700;margin-bottom:6px}
+.result-hero-sub{font-size:12px;opacity:.8;margin-bottom:20px}
+.insight-pills{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.insight-pill{background:rgba(255,255,255,.18);border:0.5px solid rgba(255,255,255,.35);border-radius:20px;padding:5px 14px;font-size:11px;font-weight:600;color:#fff}
+
+.section-card{background:#fff;border:0.5px solid #d3d1c7;border-radius:14px;padding:22px 24px;margin-bottom:14px}
+.section-title{font-size:15px;font-weight:700;color:#1a1a18;margin-bottom:3px}
+.section-sub{font-size:11px;color:#888780;margin-bottom:18px}
+
+/* SUMMARY */
+.summary-list{display:flex;flex-direction:column;gap:10px}
+.summary-item{border:0.5px solid #e8e6de;border-radius:10px;padding:12px 14px}
+.summary-stage{font-size:10px;font-weight:600;color:#888780;letter-spacing:.06em;margin-bottom:5px}
+.summary-q{font-size:12px;font-weight:600;color:#1a1a18;margin-bottom:4px}
+.summary-a{font-size:12px;color:#534AB7;line-height:1.5}
+
+/* MATRIX */
+.matrix-area{position:relative;width:100%;padding-bottom:65%;border:0.5px solid #d3d1c7;border-radius:12px;overflow:hidden;background:#fafaf8;margin-bottom:14px}
+.axis-label{position:absolute;font-size:9px;font-weight:700;color:#888780;letter-spacing:.06em;text-transform:uppercase}
+.axis-y-top{left:6px;top:10px;writing-mode:vertical-rl;text-orientation:mixed;transform:rotate(180deg)}
+.axis-y-bot{left:6px;bottom:26px;writing-mode:vertical-rl;text-orientation:mixed;transform:rotate(180deg)}
+.axis-x-l{bottom:6px;left:28px;font-size:9px}
+.axis-x-r{bottom:6px;right:10px;font-size:9px}
+.matrix-line-h{position:absolute;left:24px;right:8px;top:50%;height:0.5px;background:#d3d1c7}
+.matrix-line-v{position:absolute;left:50%;top:8px;bottom:22px;width:0.5px;background:#d3d1c7}
+.q-label{position:absolute;font-size:8px;font-weight:700;opacity:.45;letter-spacing:.04em}
+.ql-star{top:10px;right:12px;color:#085041}
+.ql-later{top:10px;left:28px;color:#3C3489}
+.ql-quick{bottom:26px;right:12px;color:#633806}
+.ql-low{bottom:26px;left:28px;color:#888780}
+.mvp-dot{position:absolute;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff;cursor:pointer;transition:transform .2s;transform:translate(-50%,-50%);box-shadow:0 2px 6px rgba(0,0,0,.18)}
+.mvp-dot:hover{transform:translate(-50%,-50%) scale(1.2);z-index:10}
+.dot-tip{position:absolute;background:#1a1a18;color:#fff;font-size:10px;padding:6px 10px;border-radius:7px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;z-index:20;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);line-height:1.5}
+.mvp-dot:hover .dot-tip{opacity:1}
+
+/* MVP LIST */
+.mvp-list{display:flex;flex-direction:column;gap:10px}
+.mvp-item{border:0.5px solid #d3d1c7;border-radius:11px;padding:14px 16px;display:flex;gap:12px}
+.mvp-item.top{border:2px solid #534AB7;background:#f8f7fe}
+.mvp-rank-circle{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;color:#fff;margin-top:2px}
+.mvp-body{flex:1}
+.mvp-en{font-size:13px;font-weight:700;color:#1a1a18;margin-bottom:2px}
+.mvp-zh{font-size:11px;color:#5f5e5a;margin-bottom:1px}
+.mvp-ko{font-size:10px;color:#888780;margin-bottom:7px}
+.mvp-desc{font-size:11px;color:#5f5e5a;line-height:1.6;margin-bottom:7px}
+.mvp-tags{display:flex;gap:6px;flex-wrap:wrap}
+.mvp-tag{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600}
+.t-high{background:#E1F5EE;color:#085041}
+.t-med{background:#FAEEDA;color:#633806}
+.t-low{background:#f1efe8;color:#5f5e5a}
+.t-hard{background:#FAECE7;color:#712B13}
+.t-b2c{background:#EEEDFE;color:#3C3489}
+.t-b2b{background:#EAF3DE;color:#27500A}
+
+.answers-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.answer-bubble{background:#f5f4f0;border-radius:10px;padding:12px 14px}
+.ab-stage{font-size:9px;font-weight:700;color:#888780;letter-spacing:.06em;margin-bottom:4px}
+.ab-q{font-size:11px;font-weight:600;color:#1a1a18;margin-bottom:5px}
+.ab-a{font-size:11px;color:#534AB7;line-height:1.5;font-style:italic}
+
+.restart-btn{width:100%;padding:14px;font-size:14px;font-weight:700;border-radius:11px;border:none;background:#534AB7;color:#fff;cursor:pointer;margin-top:6px;transition:background .15s}
+.restart-btn:hover{background:#3C3489}
+
+@media(max-width:540px){
+  .card-inner{padding:20px 16px}
+  .answers-grid{grid-template-columns:1fr}
+  .matrix-area{padding-bottom:85%}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-badge">教育問題分析卡 · 교육 문제 분석 카드</div>
+  <div class="header-title">偏鄉 × 弱勢原生家庭青年資源鴻溝</div>
+  <div class="header-sub">Rural & Disadvantaged Youth Resource Gap — Startup Analysis</div>
+  <div class="header-ko">농촌·취약계층 청소년 자원 격차 — 창업 분석</div>
+</div>
+
+<!-- QUIZ -->
+<div id="quiz-section">
+  <div class="stage-nav" id="stage-nav"></div>
+  <div class="progress-wrap">
+    <div class="progress-info">
+      <span class="progress-label">題目進度 Progress 진행률</span>
+      <span class="progress-frac" id="prog-frac">1 / 12</span>
+    </div>
+    <div class="progress-bar-bg"><div class="progress-bar-fill" id="prog-bar"></div></div>
+  </div>
+  <div class="card-wrap">
+    <div class="quiz-card">
+      <div class="card-stage-bar"></div>
+      <div class="card-inner" id="card-inner"></div>
+    </div>
+  </div>
+</div>
+
+<!-- RESULT -->
+<div class="result-wrap" id="result-section">
+  <div class="result-hero">
+    <div class="result-hero-title">分析完成！洞見 + MVP 建議出爐</div>
+    <div class="result-hero-sub">Analysis Complete · 분석 완료, MVP 추천 결과</div>
+    <div class="insight-pills" id="insight-pills"></div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title">你的回答摘要</div>
+    <div class="section-sub">Your analysis summary · 분석 요약</div>
+    <div class="answers-grid" id="answers-grid"></div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title">MVP 產品矩陣 Product Matrix 제품 매트릭스</div>
+    <div class="section-sub">縱軸：社會影響力 Impact · 橫軸：開發難易度 Difficulty · 영향력 vs 개발 난이도</div>
+    <div class="matrix-area" id="matrix-area">
+      <div class="axis-label axis-y-top">高影響 High</div>
+      <div class="axis-label axis-y-bot">低影響 Low</div>
+      <div class="axis-label axis-x-l">← 容易 Easy</div>
+      <div class="axis-label axis-x-r">困難 Hard →</div>
+      <div class="matrix-line-h"></div>
+      <div class="matrix-line-v"></div>
+      <div class="q-label ql-star">★ 優先 MVP · 우선 MVP</div>
+      <div class="q-label ql-later">規劃 Later · 나중에</div>
+      <div class="q-label ql-quick">快速驗證 · 빠른 검증</div>
+      <div class="q-label ql-low">暫緩 Avoid · 보류</div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title">推薦 MVP 清單 · Recommended MVPs · 추천 MVP 목록</div>
+    <div class="section-sub">根據你的回答動態調整優先順序 · 당신의 답변에 따라 동적으로 순위 조정</div>
+    <div class="mvp-list" id="mvp-list"></div>
+    <button class="restart-btn" onclick="restart()">重新填寫 Restart 다시 시작 ↺</button>
+  </div>
+</div>
+
+<script>
+const STAGES = [
+  {id:'s1', num:'Stage 1', en:'Problem Discovery', zh:'問題發現', ko:'문제 발견', color:'#534AB7'},
+  {id:'s2', num:'Stage 2', en:'Root Cause Analysis', zh:'根因分析', ko:'근본 원인 분석', color:'#1D9E75'},
+  {id:'s3', num:'Stage 3', en:'Solution Ideation', zh:'解方發想', ko:'솔루션 아이디어', color:'#D85A30'},
+  {id:'s4', num:'Stage 4', en:'MVP Definition', zh:'MVP 定義', ko:'MVP 정의', color:'#BA7517'},
+  {id:'s5', num:'Stage 5', en:'Validation', zh:'使用者驗證', ko:'사용자 검증', color:'#A32D2D'},
+  {id:'s6', num:'Stage 6', en:'Feasibility', zh:'可行性分析', ko:'실현 가능성', color:'#3C3489'},
+];
+
+const QUESTIONS = [
+  // Stage 1 — 2 questions
+  {stage:0, type:'choice', key:'q1a',
+   en:'Which pain point resonates most with you in the rural/disadvantaged youth resource gap?',
+   zh:'在偏鄉×弱勢青年資源鴻溝中，哪個痛點最讓你有感？',
+   ko:'농촌·취약계층 청소년 자원 격차에서 가장 공감되는 통증 포인트는?',
+   context:'<strong>偏鄉弱勢青年</strong>面臨的不只是「沒錢補習」，而是升學資訊、心理支持、職涯視野、人脈網絡的全面缺乏。<br><strong>농촌 취약 청소년</strong>은 학원비 부족만이 아니라 진학 정보·심리 지원·커리어 비전·인맥 부재가 복합적으로 얽혀 있습니다.',
+   opts:[
+     {en:'Academic support gap — no tutors, no cram schools, no guidance',zh:'學業支援斷層：沒家教、沒補習班、沒升學輔導',ko:'학업 지원 격차: 과외·학원·진학 지도 없음',key:'academic'},
+     {en:'Career blindspot — no role models or professional network',zh:'職涯視野空白：缺乏榜樣與職業人脈',ko:'진로 사각지대: 롤모델·직업 네트워크 부재',key:'career'},
+     {en:'Mental health neglect — high stress, no counseling access',zh:'心理健康忽視：高壓環境下缺乏諮商管道',ko:'정신 건강 방치: 고스트레스 환경, 상담 접근 불가',key:'mental'},
+     {en:'Information poverty — unaware of scholarships, programs, opportunities',zh:'資訊貧困：不知道獎學金、計畫、機會的存在',ko:'정보 빈곤: 장학금·프로그램·기회 자체를 모름',key:'info'},
+   ],
+   reflection:'沒有標準答案——不同痛點對應不同的使用者群與商業模式。你的選擇將影響後續 MVP 建議。\n정답은 없습니다. 선택한 통증 포인트에 따라 다른 사용자 그룹과 비즈니스 모델이 나옵니다.'},
+
+  {stage:0, type:'text', key:'q1b',
+   en:'Who specifically is affected? Describe your target person in 1–2 sentences.',
+   zh:'具體是誰受到影響？用1-2句話描述你心中的目標對象。',
+   ko:'구체적으로 누가 영향을 받나요? 1-2문장으로 목표 대상을 묘사하세요.',
+   context:'越具體越好。例如：「花東地區、父母皆為農工、國中三年級、想讀高中但不知道如何準備的15歲男生」\n구체적일수록 좋습니다. 예: "화동 지역, 농업 노동자 부모, 중3, 고교 진학 희망이지만 준비법 모르는 15세 남학생"',
+   placeholder:'例：花蓮縣、單親家庭、高中一年級女生，夢想讀大學設計系但缺乏資訊與資金… / 예: 화롄현, 한부모 가정, 고1 여학생, 대학 디자인학과 꿈꾸지만 정보·자금 부족…',
+   reflection:'具體的使用者描述（User Persona）是 MVP 設計的地基。沒有具體對象，產品容易變成「服務所有人等於服務沒有人」。\n구체적인 사용자 묘사(페르소나)는 MVP 설계의 기초입니다.'},
+
+  // Stage 2 — 2 questions
+  {stage:1, type:'choice', key:'q2a',
+   en:'What do you believe is the ROOT cause of this resource gap?',
+   zh:'你認為這個資源鴻溝的根本原因是什麼？',
+   ko:'이 자원 격차의 근본 원인이 무엇이라고 생각하나요?',
+   context:'表層症狀容易看見（缺錢、缺老師），但根本原因需要深挖。試著問自己：為什麼？為什麼？再為什麼？\n표면 증상은 쉽게 보이지만(돈·교사 부족), 근본 원인은 깊이 파야 합니다. 스스로 "왜?"를 세 번 물어보세요.',
+   opts:[
+     {en:'Structural inequality — resource allocation policies systemically favour urban areas',zh:'結構性不平等：資源分配政策系統性地向城市傾斜',ko:'구조적 불평등: 자원 배분 정책이 구조적으로 도시 편향',key:'structural'},
+     {en:'Social capital gap — disadvantaged families lack networks and "know-how" to access opportunities',zh:'社會資本鴻溝：弱勢家庭缺乏獲取機會的人脈與「隱性知識」',ko:'사회적 자본 격차: 취약 가정이 기회에 접근할 네트워크·암묵지 부재',key:'social'},
+     {en:'Information asymmetry — opportunities exist but youth simply don\'t know about them',zh:'資訊不對稱：機會存在但青少年根本不知道',ko:'정보 비대칭: 기회는 있지만 청소년이 단순히 모름',key:'info_asym'},
+     {en:'Motivation & hope deficit — systemic poverty erodes ambition before action can begin',zh:'動力與希望的缺失：系統性貧困在行動開始前就消磨了夢想',ko:'동기·희망 결핍: 구조적 빈곤이 행동 시작 전에 꿈을 갈아먹음',key:'hope'},
+   ],
+   reflection:'根本原因決定你的解法深度。「資訊不對稱」→ 可以做 App；「結構性不平等」→ 需要政策協作；「社會資本」→ 需要人與人的連結。沒有對錯，但會影響 MVP 選擇。\n근본 원인이 솔루션의 깊이를 결정합니다. 각 원인은 다른 MVP 방향으로 이어집니다.'},
+
+  {stage:1, type:'text', key:'q2b',
+   en:'How are youth currently dealing with this gap? What workarounds exist?',
+   zh:'這些青少年目前如何應對？現有的「土法煉鋼」解法是什麼？',
+   ko:'현재 청소년들은 이 격차를 어떻게 대처하고 있나요? 어떤 임시방편이 있나요?',
+   context:'了解現有應對方式能找到「可以做得更好」的槓桿點，避免重新發明輪子。\n현재 대처 방식을 이해하면 "더 잘할 수 있는" 레버리지 포인트를 찾을 수 있습니다.',
+   placeholder:'例：靠臉書社團、LINE群組自救；靠鄰居介紹工作；靠廟宇提供的獎助學金… / 예: 페이스북 커뮤니티, 라인 그룹으로 자력구제; 이웃 소개로 취업; 사찰 장학금 활용…',
+   reflection:'現有解法的缺口就是你的機會。如果現有方式「勉強夠用」，你需要想清楚你的解法比它強在哪裡。\n현재 해결책의 틈새가 당신의 기회입니다.'},
+
+  // Stage 3 — 2 questions
+  {stage:2, type:'choice', key:'q3a',
+   en:'What kind of solution feels right for this problem?',
+   zh:'你覺得哪種解法方向最適合這個問題？',
+   ko:'이 문제에 가장 적합한 솔루션 방향은 무엇이라고 느끼나요?',
+   context:'解法不一定需要 AI 或 App——有時候最好的解法是人與人的連結、或一份整理好的資訊清單。\n솔루션이 반드시 AI나 앱일 필요는 없습니다. 때로는 사람 간의 연결이나 잘 정리된 정보가 최선입니다.',
+   opts:[
+     {en:'Digital platform — aggregate resources, scholarships, mentors in one place',zh:'數位平台：把資源、獎學金、導師整合在一個地方',ko:'디지털 플랫폼: 자원·장학금·멘토를 한 곳에 통합',key:'digital'},
+     {en:'Mentorship network — connect disadvantaged youth with working professionals',zh:'導師網絡：讓弱勢青少年與職場前輩建立真實連結',ko:'멘토십 네트워크: 취약 청소년과 직장 선배의 실질적 연결',key:'mentor'},
+     {en:'Community hub — offline space providing safe learning + support environment',zh:'社區據點：線下空間提供安全的學習與支持環境',ko:'커뮤니티 허브: 안전한 학습·지원 환경을 제공하는 오프라인 공간',key:'hub'},
+     {en:'AI personalized navigator — AI guides each youth to the right opportunity',zh:'AI個人化導航：用AI引導每個青少年找到對的機會',ko:'AI 개인화 네비게이터: AI가 각 청소년을 적합한 기회로 안내',key:'ai'},
+   ],
+   reflection:'每種解法有不同的成本、速度與影響力。數位平台容易擴展但難以觸及最弱勢；線下據點影響力強但難以規模化；AI 很酷但需要大量數據。\n각 솔루션 유형은 비용·속도·영향력이 다릅니다.'},
+
+  {stage:2, type:'text', key:'q3b',
+   en:'What is the CORE value your solution provides? (Complete this sentence)',
+   zh:'你的解法的核心價值是什麼？（完成這句話）',
+   ko:'당신의 솔루션이 제공하는 핵심 가치는 무엇인가요? (다음 문장을 완성하세요)',
+   context:'「我們幫助 ＿＿＿＿ 解決 ＿＿＿＿ 讓他們可以 ＿＿＿＿」\n"우리는 ___가 ___를 해결하도록 도와서, 그들이 ___할 수 있게 합니다"',
+   placeholder:'例：我們幫助花東偏鄉高中生，解決找不到大學志願資訊與輔導的問題，讓他們可以和都市同學站在相同的起跑線上。/ 예: 우리는 농촌 고교생이 대입 정보와 멘토 부재 문제를 해결하도록 도와, 도시 학생과 같은 출발선에 설 수 있게 합니다.',
+   reflection:'能用一句話說清楚的解法，才是真正想清楚了的解法。這句話也是你未來的 Pitch 開場白。\n한 문장으로 설명할 수 있는 솔루션이 진정으로 명확한 솔루션입니다.'},
+
+  // Stage 4 — 2 questions
+  {stage:3, type:'choice', key:'q4a',
+   en:'If you had to launch in 4 weeks, what is the ONE essential feature?',
+   zh:'如果你必須在4週內上線，最不可少的那一個功能是什麼？',
+   ko:'4주 안에 런칭해야 한다면, 반드시 필요한 단 하나의 기능은 무엇인가요?',
+   context:'MVP 的本質是「以最少資源驗證最核心假設」。砍掉所有可以之後做的，只留下驗證假設必須有的。\nMVP의 본질은 "최소 자원으로 핵심 가설 검증"입니다.',
+   opts:[
+     {en:'Resource discovery — a searchable database of scholarships & programs for rural youth',zh:'資源探索：可搜尋的偏鄉青少年獎學金＆計畫資料庫',ko:'자원 탐색: 농촌 청소년 장학금·프로그램 검색 데이터베이스',key:'search'},
+     {en:'Mentor matching — a form-based system to connect youth with 1 mentor',zh:'導師配對：用表單系統讓青少年與一位導師連結',ko:'멘토 매칭: 폼 기반으로 청소년과 멘토 1명 연결',key:'match'},
+     {en:'Peer community — a group chat or forum for rural youth to share experiences',zh:'同儕社群：給偏鄉青少年分享經驗的群聊或論壇',ko:'동료 커뮤니티: 농촌 청소년이 경험을 공유하는 그룹챗·포럼',key:'community'},
+     {en:'Personalized roadmap — a questionnaire that outputs a custom action plan',zh:'個人化路線圖：填問卷後輸出量身定制的行動計畫',ko:'개인화 로드맵: 설문 입력 후 맞춤형 실행 계획 출력',key:'roadmap'},
+   ],
+   reflection:'你選擇的核心功能定義了你的 MVP 假設。4週內可以用非常低科技的方式驗證：Google表單＋LINE群組也是 MVP！\n선택한 핵심 기능이 MVP 가설을 정의합니다. 구글폼+라인 그룹도 MVP가 될 수 있습니다!'},
+
+  {stage:3, type:'text', key:'q4b',
+   en:'What features are NOT necessary for the MVP? What can wait?',
+   zh:'哪些功能是 MVP 不需要的？什麼可以等之後再做？',
+   ko:'MVP에 필요 없는 기능은 무엇인가요? 나중으로 미룰 수 있는 것은?',
+   context:'說「不」和說「是」一樣重要。砍掉不必要的功能是 MVP 最難也最關鍵的工作。\n"아니오"라고 말하는 것은 "예"만큼 중요합니다. 불필요한 기능 제거가 MVP 작업 중 가장 어렵고 중요합니다.',
+   placeholder:'例：AI推薦算法（之後再做）、多語言版本、APP原生應用、積分系統、直播功能… / 예: AI 추천 알고리즘(나중에), 다국어 버전, 네이티브 앱, 포인트 시스템, 라이브 기능…',
+   reflection:'你砍掉的功能清單，就是你「不貪心」的證明。投資人和使用者都更相信一個知道自己不做什麼的團隊。\n제거한 기능 목록이 "욕심 없음"의 증거입니다.'},
+
+  // Stage 5 — 2 questions
+  {stage:4, type:'choice', key:'q5a',
+   en:'How would you validate if youth actually want this product?',
+   zh:'你要如何驗證青少年真的想要這個產品？',
+   ko:'청소년이 실제로 이 제품을 원하는지 어떻게 검증할 건가요?',
+   context:'最常見的創業失誤是「先做產品，後問使用者」。驗證應該在花大錢開發之前完成。\n가장 흔한 창업 실수는 "먼저 제품 만들고, 나중에 사용자 묻기"입니다.',
+   opts:[
+     {en:'User interviews — talk to 10 rural youth and their families in the next 2 weeks',zh:'使用者訪談：在2週內和10位偏鄉青少年及其家人深談',ko:'사용자 인터뷰: 2주 내 농촌 청소년 10명과 심층 대화',key:'interview'},
+     {en:'Landing page test — build a one-page website and measure sign-up interest',zh:'落地頁測試：做一頁網站看有多少人留下聯絡方式',ko:'랜딩 페이지 테스트: 단일 페이지 웹사이트로 관심 측정',key:'landing'},
+     {en:'Prototype test — create a low-fidelity mockup and walk 5 users through it',zh:'原型測試：做低保真原型讓5個使用者實際操作',ko:'프로토타입 테스트: 로우파이 목업으로 사용자 5명 실제 조작',key:'prototype'},
+     {en:'Community pilot — run a 4-week pilot program with 1 school or community group',zh:'社群試行：和1個學校或社群組織合作跑4週試點',ko:'커뮤니티 파일럿: 학교·커뮤니티 1곳과 4주 시범 운영',key:'pilot'},
+   ],
+   reflection:'四種方法都有效，關鍵是「最快速、最低成本地得到真實反饋」。使用者訪談是最便宜的起點；社群試行最真實但成本較高。\n네 가지 방법 모두 유효합니다. 핵심은 "가장 빠르고 저렴하게 진짜 피드백 얻기"입니다.'},
+
+  {stage:4, type:'text', key:'q5b',
+   en:'What would make someone choose YOUR solution over existing alternatives?',
+   zh:'什麼會讓人選擇你的解法，而不是現有的替代方案？你的差異化是什麼？',
+   ko:'사람들이 기존 대안보다 당신의 솔루션을 선택하게 만드는 것은? 차별화는?',
+   context:'現有替代方案可能包括：政府補助、NGO服務、免費的YouTube、學校輔導老師、廟宇獎學金⋯\n기존 대안으로는 정부 보조, NGO 서비스, 유튜브, 학교 상담교사, 장학금 등이 있습니다.',
+   placeholder:'例：我們的差異在於「主動找上門」而非等青少年自己尋求幫助；我們用同儕語言而非官僚語言… / 예: 차별화는 "청소년이 찾아오길 기다리지 않고 찾아가는" 방식; 관료 언어가 아닌 또래 언어 사용…',
+   reflection:'真正的差異化不是功能清單，而是「你服務別人不願意服務的那一段最後一哩路」。\n진정한 차별화는 기능 목록이 아니라 "다른 사람이 하기 싫어하는 마지막 1마일을 서비스하는 것"입니다.'},
+
+  // Stage 6 — 2 questions
+  {stage:5, type:'choice', key:'q6a',
+   en:'What is your revenue model? How does this become sustainable?',
+   zh:'你的收入模式是什麼？這個產品要如何自給自足？',
+   ko:'수익 모델은 무엇인가요? 이 제품이 어떻게 자생할 수 있을까요?',
+   context:'公益性質的服務不代表不能有收入。找到能讓使命持續的商業模式，才是真正長久的解法。\n공익 서비스라도 수익이 없을 수 없습니다. 사명을 지속시킬 비즈니스 모델을 찾는 것이 진정한 장기 해법입니다.',
+   opts:[
+     {en:'B2G — partner with government / schools who pay for the service',zh:'政府/學校買單（B2G）：政府或學校付費採購服務',ko:'B2G: 정부·학교가 서비스 비용 지불',key:'b2g'},
+     {en:'B2B CSR — companies pay to sponsor youth programs as CSR initiatives',zh:'企業CSR贊助（B2B）：企業用CSR預算贊助青少年計畫',ko:'B2B CSR: 기업이 CSR 예산으로 청소년 프로그램 후원',key:'csr'},
+     {en:'Freemium — basic service free for youth, premium features for families or mentors',zh:'免費增值（Freemium）：青少年免費，家長或導師付費進階功能',ko:'프리미엄: 청소년 무료, 부모·멘토 유료 고급 기능',key:'freemium'},
+     {en:'Grant + hybrid — start with grants, build toward earned revenue over time',zh:'補助金起步＋混合模式：先靠補助金，逐步發展自主收入',ko:'보조금 시작 + 하이브리드: 먼저 보조금, 점진적으로 자주 수익 개발',key:'grant'},
+   ],
+   reflection:'沒有最好的收入模式，只有最適合你的使用者和你的能力的模式。B2G穩定但慢；CSR快但不穩；Freemium難做但最有彈性。\n최선의 수익 모델은 없습니다. 사용자와 역량에 가장 맞는 모델만 있습니다.'},
+
+  {stage:5, type:'text', key:'q6b',
+   en:'Is the market large enough? How many youth could this impact in 3 years?',
+   zh:'市場夠大嗎？這個解法3年內能影響多少青少年？試著給出一個數字。',
+   ko:'시장이 충분히 큰가요? 3년 안에 얼마나 많은 청소년에게 영향을 줄 수 있나요? 숫자를 제시해 보세요.',
+   context:'台灣偏鄉青少年約有20萬人；全球類似情境的青少年超過3億。你的解法打算從哪裡開始，到哪裡結束？\n대만 농촌 청소년은 약 20만 명; 전 세계 유사 상황 청소년은 3억 명 이상입니다.',
+   placeholder:'例：第1年：花東200人；第2年：全台偏鄉縣市2,000人；第3年：5萬人＋輸出東南亞模式 / 예: 1년차: 화동 200명; 2년차: 대만 농촌 2,000명; 3년차: 5만 명 + 동남아 모델 수출',
+   reflection:'數字不需要完美，但需要有邏輯。「從小開始、快速學習、逐步擴大」比「一開始就要幫助所有人」更可信、更有機會成功。\n숫자는 완벽할 필요 없지만 논리가 있어야 합니다.'},
+];
+
+const MVPS = [
+  {en:'Resource Discovery Hub',zh:'資源探索平台',ko:'자원 탐색 허브',
+   desc:'偏鄉弱勢青少年專屬的獎學金、計畫、機會整合搜尋平台。Google表單+試算表即可驗證。\n농촌 취약 청소년 전용 장학금·프로그램·기회 통합 검색 플랫폼.',
+   impact:0.78,diff:0.28,color:'#534AB7',tags:['t-high','t-b2c'],tl:['高影響 High Impact','B2C 直達使用者']},
+  {en:'Peer Mentor Matching',zh:'同儕導師配對',ko:'동료 멘토 매칭',
+   desc:'讓過去受助的偏鄉青少年成為現在的導師，建立可持續的互助循環。\n과거 수혜 청소년이 현재 멘토가 되는 지속 가능한 상호 지원 순환.',
+   impact:0.85,diff:0.38,color:'#1D9E75',tags:['t-high','t-b2c'],tl:['高影響 High Impact','快速驗證 Quick MVP']},
+  {en:'School Partnership Tool',zh:'學校合作工具包',ko:'학교 협력 툴킷',
+   desc:'給學校老師和輔導員使用的 B2B 工具，協助識別並引導弱勢學生取得外部資源。\nB2B 도구로 교사·상담사가 취약 학생을 식별하고 외부 자원으로 연결.',
+   impact:0.82,diff:0.55,color:'#D85A30',tags:['t-high','t-b2b'],tl:['高影響 High Impact','B2B 較穩定收入']},
+  {en:'AI Opportunity Navigator',zh:'AI機會導航器',ko:'AI 기회 네비게이터',
+   desc:'根據青少年背景、興趣、地點，個人化推薦最相關的機會與下一步行動。\n청소년 배경·관심·위치에 따라 가장 관련성 높은 기회와 다음 행동 개인화 추천.',
+   impact:0.88,diff:0.80,color:'#BA7517',tags:['t-high','t-hard'],tl:['高影響 High Impact','技術門檻高 Hard']},
+  {en:'Community Safe Space App',zh:'社群安心空間',ko:'커뮤니티 안전 공간 앱',
+   desc:'提供偏鄉青少年線上互助社群、心理支持、匿名提問的安全數位空間。\n농촌 청소년에게 온라인 상호 지원·심리 지지·익명 질문 안전 디지털 공간 제공.',
+   impact:0.72,diff:0.42,color:'#A32D2D',tags:['t-med','t-b2c'],tl:['中高影響 Med-High','社群冷啟動難']},
+  {en:'CSR Youth Impact Program',zh:'企業CSR青年影響計畫',ko:'기업 CSR 청소년 임팩트 프로그램',
+   desc:'幫助企業設計並執行偏鄉青少年支持計畫，收取服務費。穩定的 B2B 收入來源。\n기업이 농촌 청소년 지원 프로그램을 설계·운영하도록 지원하고 서비스 수수료 수취.',
+   impact:0.65,diff:0.35,color:'#3C3489',tags:['t-med','t-b2b'],tl:['中影響 Med Impact','B2B 穩定現金流']},
+];
+
+let current = 0;
+let answers = {};
+const TOTAL = QUESTIONS.length;
+
+function buildStageNav(){
+  const nav = document.getElementById('stage-nav');
+  STAGES.forEach((s,i)=>{
+    const div = document.createElement('div');
+    div.className = 'stage-pip';
+    div.id = 'pip-'+i;
+    div.innerHTML = `<div class="stage-num">${s.num}</div><div class="stage-name">${s.en}<br>${s.zh}<br>${s.ko}</div>`;
+    div.onclick = ()=>{ /* allow clicking done stages */ };
+    nav.appendChild(div);
+  });
+  updateStageNav();
+}
+
+function updateStageNav(){
+  const curStage = QUESTIONS[current]?.stage ?? 5;
+  STAGES.forEach((_,i)=>{
+    const pip = document.getElementById('pip-'+i);
+    if(!pip) return;
+    pip.className = 'stage-pip';
+    if(i < curStage) pip.classList.add('done');
+    else if(i === curStage) pip.classList.add('active');
+  });
+}
+
+function renderQ(){
+  const q = QUESTIONS[current];
+  const s = STAGES[q.stage];
+  const inner = document.getElementById('card-inner');
+
+  let html = `
+    <div class="q-stage-label">
+      <span class="q-stage-badge" style="background:${s.color}20;color:${s.color};border-color:${s.color}60">${s.num}</span>
+      <span class="q-stage-name">${s.en} · ${s.zh} · ${s.ko}</span>
+    </div>
+    <div class="q-num">問題 Q ${current+1} of ${TOTAL}</div>
+    <div class="q-main">${q.en}</div>
+    <div class="q-zh">${q.zh}</div>
+    <div class="q-ko">${q.ko}</div>
+    <div class="q-context">${q.context}</div>`;
+
+  if(q.type==='choice'){
+    html += `<div class="opts-label">選擇最符合的 · Select one · 하나 선택</div><div class="options">`;
+    q.opts.forEach((o,i)=>{
+      const sel = answers[q.key]?.choice === i;
+      html += `<button class="opt ${sel?'selected':''}" onclick="selectOpt(${i})">
+        <div class="opt-circle"><div class="opt-check"></div></div>
+        <div class="opt-text">
+          <div class="opt-en">${o.en}</div>
+          <div class="opt-zh">${o.zh}</div>
+          <div class="opt-ko">${o.ko}</div>
+        </div></button>`;
+    });
+    html += `</div>`;
+  } else {
+    const saved = answers[q.key]?.text || '';
+    html += `<div class="textarea-label">簡答 Short Answer · 단답형</div>
+      <textarea class="q-textarea" id="q-textarea" placeholder="${q.placeholder}" oninput="saveText(this.value)">${saved}</textarea>
+      <div class="char-count" id="char-count">${saved.length} 字 chars 자</div>`;
+  }
+
+  const refShown = answers[q.key] !== undefined;
+  html += `<div class="reflection ${refShown?'show':''}" id="reflection">
+    <div class="reflection-title">💡 思考提示 Reflection Point · 성찰 포인트</div>
+    <div class="reflection-body">${q.reflection}</div>
+  </div>`;
+
+  html += `<div class="nav-row">
+    <button class="btn-prev" onclick="prevQ()" ${current===0?'style="visibility:hidden"':''}>← 上一題</button>
+    <button class="btn-skip" onclick="skipQ()">跳過 Skip 건너뛰기</button>
+    <button class="btn-next" id="btn-next" onclick="nextQ()" ${answers[q.key]===undefined && q.type==='choice'?'disabled':''}>
+      ${current===TOTAL-1?'查看結果 →':'下一題 →'}
+    </button>
+  </div>`;
+
+  inner.innerHTML = html;
+
+  document.getElementById('prog-frac').textContent = `${current+1} / ${TOTAL}`;
+  document.getElementById('prog-bar').style.width = `${((current+1)/TOTAL)*100}%`;
+  updateStageNav();
+}
+
+function selectOpt(i){
+  const q = QUESTIONS[current];
+  answers[q.key] = { choice: i, choiceKey: q.opts[i].key, choiceEn: q.opts[i].en, choiceZh: q.opts[i].zh };
+  document.querySelectorAll('.opt').forEach((b,idx)=>{
+    b.className = 'opt' + (idx===i?' selected':'');
+  });
+  document.getElementById('reflection').classList.add('show');
+  document.getElementById('btn-next').disabled = false;
+}
+
+function saveText(val){
+  const q = QUESTIONS[current];
+  answers[q.key] = { text: val };
+  document.getElementById('char-count').textContent = val.length + ' 字 chars 자';
+  document.getElementById('reflection').classList.add('show');
+  document.getElementById('btn-next').disabled = false;
+}
+
+function nextQ(){
+  if(current < TOTAL-1){ current++; renderQ(); window.scrollTo(0,0); }
+  else showResult();
+}
+function prevQ(){ if(current>0){ current--; renderQ(); window.scrollTo(0,0); } }
+function skipQ(){
+  const q = QUESTIONS[current];
+  if(!answers[q.key]) answers[q.key] = { skipped: true };
+  nextQ();
+}
+
+function showResult(){
+  document.getElementById('quiz-section').style.display='none';
+  document.getElementById('result-section').style.display='block';
+  window.scrollTo(0,0);
+  buildInsights();
+  buildAnswerGrid();
+  buildMatrix();
+  buildMVPList();
+}
+
+function buildInsights(){
+  const pills = document.getElementById('insight-pills');
+  const painKey = answers['q1a']?.choiceKey;
+  const rootKey = answers['q2a']?.choiceKey;
+  const solKey  = answers['q3a']?.choiceKey;
+  const featKey = answers['q4a']?.choiceKey;
+  const valKey  = answers['q5a']?.choiceKey;
+  const revKey  = answers['q6a']?.choiceKey;
+
+  const map = {
+    academic:'學業支援型', career:'職涯視野型', mental:'心理健康型', info:'資訊公平型',
+    structural:'結構改革導向', social:'社會資本型', info_asym:'資訊橋接型', hope:'希望啟動型',
+    digital:'數位平台', mentor:'導師網絡', hub:'社區據點', ai:'AI導航',
+    search:'資源搜尋 MVP', match:'配對 MVP', community:'社群 MVP', roadmap:'路線圖 MVP',
+    interview:'訪談驗證', landing:'頁面測試', prototype:'原型測試', pilot:'試點驗證',
+    b2g:'政府採購', csr:'CSR模式', freemium:'免費增值', grant:'補助金模式',
+  };
+  const keys = [painKey,rootKey,solKey,featKey,valKey,revKey].filter(Boolean);
+  pills.innerHTML = keys.map(k=>`<div class="insight-pill">${map[k]||k}</div>`).join('');
+}
+
+function buildAnswerGrid(){
+  const grid = document.getElementById('answers-grid');
+  let html = '';
+  QUESTIONS.forEach(q=>{
+    const a = answers[q.key];
+    if(!a) return;
+    const s = STAGES[q.stage];
+    let aText = '';
+    if(a.skipped) aText = '（已跳過 Skipped 건너뜀）';
+    else if(a.choiceZh) aText = a.choiceEn + '<br>' + a.choiceZh;
+    else if(a.text) aText = a.text.substring(0,120) + (a.text.length>120?'…':'');
+    html += `<div class="answer-bubble">
+      <div class="ab-stage">${s.num} ${s.zh}</div>
+      <div class="ab-q">${q.zh}</div>
+      <div class="ab-a">${aText}</div>
+    </div>`;
+  });
+  grid.innerHTML = html;
+}
+
+function buildMatrix(){
+  const area = document.getElementById('matrix-area');
+  area.querySelectorAll('.mvp-dot').forEach(d=>d.remove());
+  const W = area.offsetWidth||340, H = area.offsetHeight||220;
+  const padL=28,padR=10,padT=16,padB=26;
+  const uW=W-padL-padR, uH=H-padT-padB;
+  MVPS.forEach((m,i)=>{
+    const x=padL+m.diff*uW, y=padT+(1-m.impact)*uH;
+    const dot=document.createElement('div');
+    dot.className='mvp-dot';
+    dot.style.cssText=`left:${x}px;top:${y}px;background:${m.color};width:32px;height:32px;`;
+    dot.innerHTML=`${i+1}<div class="dot-tip">${m.en}<br>${m.zh}<br>${m.ko}</div>`;
+    area.appendChild(dot);
+  });
+}
+
+function buildMVPList(){
+  // Adjust priority based on answers
+  const painKey = answers['q1a']?.choiceKey;
+  const solKey  = answers['q3a']?.choiceKey;
+  const revKey  = answers['q6a']?.choiceKey;
+
+  let scored = MVPS.map((m,i)=>{
+    let bonus = 0;
+    if(painKey==='info' && i===0) bonus+=0.1;
+    if(painKey==='career' && i===1) bonus+=0.1;
+    if(solKey==='digital' && i===0) bonus+=0.08;
+    if(solKey==='mentor' && i===1) bonus+=0.12;
+    if(solKey==='ai' && i===3) bonus+=0.12;
+    if(revKey==='csr' && i===5) bonus+=0.10;
+    if(revKey==='b2g' && i===2) bonus+=0.10;
+    return { ...m, score: m.impact - m.diff*0.35 + bonus };
+  }).sort((a,b)=>b.score-a.score);
+
+  const list = document.getElementById('mvp-list');
+  list.innerHTML = scored.map((m,i)=>{
+    const isTop = i<2;
+    const tags = m.tags.map((t,ti)=>`<span class="mvp-tag ${t}">${m.tl[ti]}</span>`).join('');
+    return `<div class="mvp-item ${isTop?'top':''}">
+      <div class="mvp-rank-circle" style="background:${m.color}">${i+1}</div>
+      <div class="mvp-body">
+        <div class="mvp-en">${isTop?'⭐ ':''}${m.en}</div>
+        <div class="mvp-zh">${m.zh}</div>
+        <div class="mvp-ko">${m.ko}</div>
+        <div class="mvp-desc">${m.desc}</div>
+        <div class="mvp-tags">${tags}</div>
+      </div></div>`;
+  }).join('');
+}
+
+function restart(){
+  current=0; answers={};
+  document.getElementById('quiz-section').style.display='block';
+  document.getElementById('result-section').style.display='none';
+  window.scrollTo(0,0);
+  renderQ();
+}
+
+buildStageNav();
+renderQ();
+window.addEventListener('resize',()=>{ if(document.getElementById('result-section').style.display==='block') buildMatrix(); });
+</script>
+</body>
+</html>
